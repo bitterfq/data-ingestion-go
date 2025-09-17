@@ -8,12 +8,39 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
+type GeoCoords struct {
+	Lat float64
+	Lon float64
+}
+
 type Supplier struct {
-	SupplierID           string
-	TenantID             string
-	SupplierCode         string
-	LegalName            string
-	Country              string
+	// Identity
+	SupplierID   string
+	TenantID     string
+	SupplierCode string
+
+	// Names & location
+	LegalName string
+	DBAName   string
+	Country   string
+	Region    string
+
+	// Address
+	AddressLine1 string
+	AddressLine2 string
+	City         string
+	State        string
+	PostalCode   string
+
+	// Contacts
+	ContactEmail string
+	ContactPhone string
+
+	// Commercial
+	PreferredCurrency string
+	Incoterms         string
+
+	// Performance & risk
 	LeadTimeDaysAvg      int
 	LeadTimeDaysP95      int
 	OnTimeDeliveryRate   float64
@@ -21,8 +48,24 @@ type Supplier struct {
 	CapacityUnitsPerWeek int
 	RiskScore            float64
 	FinancialRiskTier    string
-	ApprovedStatus       string
-	DataSource           string
+
+	// Certifications & compliance
+	Certifications  []string
+	ComplianceFlags []string
+
+	// Status & contracts
+	ApprovedStatus string
+	Contracts      []string
+	TermsVersion   string
+
+	// Geo
+	GeoCoords *GeoCoords
+
+	// Lineage / metadata
+	DataSource         string
+	SourceTimestamp    time.Time
+	IngestionTimestamp time.Time
+	SchemaVersion      string
 }
 
 func GenerateSupplier(tenant string) Supplier {
@@ -33,21 +76,72 @@ func GenerateSupplier(tenant string) Supplier {
 	onTime := gofakeit.Float64Range(60, 100)
 	risk := 100 - onTime + gofakeit.Float64Range(0, 10)
 
+	// Uniform stubs for now
+	countries := []string{"US", "CN", "DE", "MX", "IN", "VN", "PL", "JP", "KR"}
+	regions := []string{"EMEA", "APAC", "AMERICAS"}
+	incoterms := []string{"DDP", "FOB", "CIF", "EXW"}
+	tiers := []string{"LOW", "MEDIUM", "HIGH"}
+	statuses := []string{"APPROVED", "PENDING", "SUSPENDED"}
+	currencies := []string{"USD", "CNY", "EUR", "INR", "JPY"}
+	certs := []string{"ISO9001", "IATF16949", "AS9100", "ISO14001"}
+	flags := []string{"ITAR", "REACH", "ROHS"}
+
 	return Supplier{
-		SupplierID:           ulid.MustNew(ulid.Timestamp(t), entropy).String(),
-		TenantID:             tenant,
-		SupplierCode:         gofakeit.LetterN(6), // ERP-like code
-		LegalName:            gofakeit.Company(),
-		Country:              gofakeit.CountryAbr(),
+		// Identity
+		SupplierID:   ulid.MustNew(ulid.Timestamp(t), entropy).String(),
+		TenantID:     tenant,
+		SupplierCode: gofakeit.LetterN(1) + gofakeit.Numerify("######"),
+
+		// Names & location
+		LegalName: gofakeit.Company(),
+		DBAName:   gofakeit.CompanySuffix(),
+		Country:   gofakeit.RandomString(countries),
+		Region:    gofakeit.RandomString(regions),
+
+		// Address
+		AddressLine1: gofakeit.Street(),
+		AddressLine2: "",
+		City:         gofakeit.City(),
+		State:        gofakeit.StateAbr(),
+		PostalCode:   gofakeit.Zip(),
+
+		// Contacts
+		ContactEmail: gofakeit.Email(),
+		ContactPhone: gofakeit.Phone(),
+
+		// Commercial
+		PreferredCurrency: gofakeit.RandomString(currencies),
+		Incoterms:         gofakeit.RandomString(incoterms),
+
+		// Performance & risk
 		LeadTimeDaysAvg:      gofakeit.Number(3, 90),
 		LeadTimeDaysP95:      gofakeit.Number(7, 180),
-		OnTimeDeliveryRate:   gofakeit.Float64Range(60, 100),
+		OnTimeDeliveryRate:   onTime,
 		DefectRatePPM:        gofakeit.Number(50, 1000),
 		CapacityUnitsPerWeek: gofakeit.Number(100, 10000),
 		RiskScore:            risk,
-		FinancialRiskTier:    gofakeit.RandomString([]string{"LOW", "MEDIUM", "HIGH"}),
-		ApprovedStatus:       gofakeit.RandomString([]string{"APPROVED", "PENDING", "SUSPENDED"}),
-		DataSource:           "synthetic.v1",
+		FinancialRiskTier:    gofakeit.RandomString(tiers),
+
+		// Certifications & compliance
+		Certifications:  []string{gofakeit.RandomString(certs)},
+		ComplianceFlags: []string{gofakeit.RandomString(flags)},
+
+		// Status & contracts
+		ApprovedStatus: gofakeit.RandomString(statuses),
+		Contracts:      []string{"CONTRACT_" + gofakeit.Numerify("####")},
+		TermsVersion:   gofakeit.Numerify("#.#"),
+
+		// Geo
+		GeoCoords: &GeoCoords{
+			Lat: gofakeit.Latitude(),
+			Lon: gofakeit.Longitude(),
+		},
+
+		// Lineage / metadata
+		DataSource:         "synthetic.v1",
+		SourceTimestamp:    time.Now().Add(-time.Hour * time.Duration(gofakeit.Number(1, 72))),
+		IngestionTimestamp: time.Now(),
+		SchemaVersion:      "1.0.0",
 	}
 
 }

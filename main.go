@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	s := suppliers.GenerateSuppliers("tenant_acme", 5000)
-	fmt.Println(len(s))
+	s := suppliers.GenerateSuppliers("tenant_acme", 50)
+	fmt.Println("%+v\n", s)
 }
