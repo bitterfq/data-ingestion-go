@@ -1,7 +1,10 @@
 package suppliers
 
 import (
+	"encoding/csv"
+	"fmt"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
@@ -152,4 +155,96 @@ func GenerateSuppliers(tenant string, count int) []Supplier {
 		suppliers[i] = GenerateSupplier(tenant)
 	}
 	return suppliers
+}
+
+func SupplierWriter(filename string, suppliers []Supplier) bool {
+	file, err := os.Create(filename)
+	if err != nil {
+		fmt.Println("error creating file:", err)
+		return false
+	}
+	defer file.Close()
+
+	w := csv.NewWriter(file)
+
+	// Header row
+	header := []string{
+		"supplier_id", "tenant_id", "supplier_code",
+		"legal_name", "dba_name", "country", "region",
+		"address_line1", "address_line2", "city", "state", "postal_code",
+		"contact_email", "contact_phone",
+		"preferred_currency", "incoterms",
+		"lead_time_days_avg", "lead_time_days_p95", "on_time_delivery_rate",
+		"defect_rate_ppm", "capacity_units_per_week", "risk_score", "financial_risk_tier",
+		"certifications", "compliance_flags",
+		"approved_status", "contracts", "terms_version",
+		"lat", "lon",
+		"data_source", "source_timestamp", "ingestion_timestamp", "schema_version",
+	}
+	if err := w.Write(header); err != nil {
+		fmt.Println("error writing header:", err)
+		return false
+	}
+
+	// Data rows
+	for _, sup := range suppliers {
+		row := []string{
+			sup.SupplierID,
+			sup.TenantID,
+			sup.SupplierCode,
+			sup.LegalName,
+			sup.DBAName,
+			sup.Country,
+			sup.Region,
+			sup.AddressLine1,
+			sup.AddressLine2,
+			sup.City,
+			sup.State,
+			sup.PostalCode,
+			sup.ContactEmail,
+			sup.ContactPhone,
+			sup.PreferredCurrency,
+			sup.Incoterms,
+			fmt.Sprintf("%d", sup.LeadTimeDaysAvg),
+			fmt.Sprintf("%d", sup.LeadTimeDaysP95),
+			fmt.Sprintf("%.2f", sup.OnTimeDeliveryRate),
+			fmt.Sprintf("%d", sup.DefectRatePPM),
+			fmt.Sprintf("%d", sup.CapacityUnitsPerWeek),
+			fmt.Sprintf("%.2f", sup.RiskScore),
+			sup.FinancialRiskTier,
+			fmt.Sprintf("%v", sup.Certifications),
+			fmt.Sprintf("%v", sup.ComplianceFlags),
+			sup.ApprovedStatus,
+			fmt.Sprintf("%v", sup.Contracts),
+			sup.TermsVersion,
+		}
+		if sup.GeoCoords != nil {
+			row = append(row,
+				fmt.Sprintf("%.6f", sup.GeoCoords.Lat),
+				fmt.Sprintf("%.6f", sup.GeoCoords.Lon),
+			)
+		} else {
+			row = append(row, "", "")
+		}
+		row = append(row,
+			sup.DataSource,
+			sup.SourceTimestamp.Format(time.RFC3339),
+			sup.IngestionTimestamp.Format(time.RFC3339),
+			sup.SchemaVersion,
+		)
+
+		if err := w.Write(row); err != nil {
+			fmt.Println("error writing row:", err)
+			return false
+		}
+	}
+
+	w.Flush()
+	if err := w.Error(); err != nil {
+		fmt.Println("error flushing writer:", err)
+		return false
+	}
+
+	fmt.Println("wrote file:", filename)
+	return true
 }
