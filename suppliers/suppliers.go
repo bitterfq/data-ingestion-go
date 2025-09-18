@@ -1,3 +1,4 @@
+// Package suppliers provides data structures and functions for generating and exporting synthetic supplier data.
 package suppliers
 
 import (
@@ -12,11 +13,13 @@ import (
 )
 
 type GeoCoords struct {
+	// GeoCoords represents geographical coordinates (latitude and longitude).
 	Lat float64
 	Lon float64
 }
 
 type Supplier struct {
+	// Supplier represents a supplier entity with identity, location, contact, commercial, performance, compliance, and metadata fields.
 	// Identity
 	SupplierID   string
 	TenantID     string
@@ -71,6 +74,8 @@ type Supplier struct {
 	SchemaVersion      string
 }
 
+// GenerateSupplier creates and returns a single synthetic Supplier for the given tenant.
+// The data is randomly generated for testing or demo purposes.
 func GenerateSupplier(tenant string) Supplier {
 
 	t := time.Now()
@@ -149,6 +154,8 @@ func GenerateSupplier(tenant string) Supplier {
 
 }
 
+// GenerateSuppliers creates and returns a slice of synthetic Suppliers for the given tenant.
+// The number of suppliers generated is specified by count.
 func GenerateSuppliers(tenant string, count int) []Supplier {
 	suppliers := make([]Supplier, count)
 	for i := 0; i < count; i++ {
@@ -157,6 +164,8 @@ func GenerateSuppliers(tenant string, count int) []Supplier {
 	return suppliers
 }
 
+// SupplierWriter writes a slice of Supplier records to a CSV file with the given filename.
+// Returns true if the file was written successfully, false otherwise.
 func SupplierWriter(filename string, suppliers []Supplier) bool {
 	file, err := os.Create(filename)
 	if err != nil {
@@ -245,6 +254,6 @@ func SupplierWriter(filename string, suppliers []Supplier) bool {
 		return false
 	}
 
-	fmt.Println("wrote file:", filename)
+	fmt.Println("Suppliers csv file:", filename)
 	return true
 }

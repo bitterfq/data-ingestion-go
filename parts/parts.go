@@ -1,3 +1,4 @@
+// Package parts provides data structures and functions for generating and exporting synthetic part data.
 package parts
 
 import (
@@ -11,6 +12,7 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 )
 
+// Part represents a part entity with identity, description, supplier, cost, compliance, and metadata fields.
 type Part struct {
 	part_id                string
 	tenant_id              string
@@ -37,6 +39,8 @@ type Part struct {
 	schema_version         string
 }
 
+// GeneratePart creates and returns a single synthetic Part with example data.
+// The data is randomly generated for testing or demo purposes.
 func GeneratePart() Part {
 	return Part{
 		part_id:                gofakeit.UUID(),
@@ -55,13 +59,15 @@ func GeneratePart() Part {
 		lead_time_days_avg:     30,
 		lead_time_days_p95:     45,
 		quality_grade:          "A",
-		compliance_flags:       []string{"flag_1", "flag_2"},
-		hazard_class:           "non-hazardous",
-		last_price_change:      time.Now(),
-		data_source:            "example_source",
-		source_timestamp:       time.Now(),
-		ingestion_timestamp:    time.Now(),
-		schema_version:         "1.0.0",
+		// GenerateParts creates and returns a slice of synthetic Parts.
+		// The number of parts generated is specified by count.
+		compliance_flags:    []string{"flag_1", "flag_2"},
+		hazard_class:        "non-hazardous",
+		last_price_change:   time.Now(),
+		data_source:         "example_source",
+		source_timestamp:    time.Now(),
+		ingestion_timestamp: time.Now(),
+		schema_version:      "1.0.0",
 	}
 }
 
@@ -70,10 +76,11 @@ func GenerateParts(count int) []Part {
 	for i := 0; i < count; i++ {
 		parts[i] = GeneratePart()
 	}
-
 	return parts
 }
 
+// PartsWriter writes a slice of Part records to a CSV file with the given filename.
+// Returns true if the file was written successfully, false otherwise.
 func PartsWriter(filename string, parts []Part) bool {
 	file, err := os.Create(filename)
 	if err != nil {
@@ -140,6 +147,7 @@ func PartsWriter(filename string, parts []Part) bool {
 		return false
 	}
 
+	fmt.Println("Parts csv file:", filename)
 	return true
 
 }
