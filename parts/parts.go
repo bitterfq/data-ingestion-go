@@ -14,67 +14,89 @@ import (
 
 // Part represents a part entity with identity, description, supplier, cost, compliance, and metadata fields.
 type Part struct {
-	part_id                string
-	tenant_id              string
-	part_number            string
-	description            string
-	category               string
-	lifecycle_status       string
-	uom                    string
-	spec_hash              string
-	bom_compatibility      []string
-	default_supplier_id    string
-	qualified_supplier_ids []string
-	unit_cost              float64
-	moq                    int
-	lead_time_days_avg     int
-	lead_time_days_p95     int
-	quality_grade          string
-	compliance_flags       []string
-	hazard_class           string
-	last_price_change      time.Time
-	data_source            string
-	source_timestamp       time.Time
-	ingestion_timestamp    time.Time
-	schema_version         string
+	PartID               string
+	TenantID             string
+	PartNumber           string
+	Description          string
+	Category             string
+	LifecycleStatus      string
+	Uom                  string
+	SpecHash             string
+	BomCompatibility     []string
+	DefaultSupplierID    string
+	QualifiedSupplierIDs []string
+	UnitCost             float64
+	Moq                  int
+	LeadTimeDaysAvg      int
+	LeadTimeDaysP95      int
+	QualityGrade         string
+	ComplianceFlags      []string
+	HazardClass          string
+	LastPriceChange      time.Time
+	DataSource           string
+	SourceTimestamp      time.Time
+	IngestionTimestamp   time.Time
+	SchemaVersion        string
 }
 
 // GeneratePart creates and returns a single synthetic Part with example data.
 // The data is randomly generated for testing or demo purposes.
-func GeneratePart() Part {
+func GeneratePart(tenant string, supplierIDs []string) Part {
+
+	categories := []string{"ELECTRICAL", "MECHANICAL", "RAW_MATERIAL", "OTHER"}
+	lifecycle_status := []string{"NEW", "ACTIVE", "NRND", "EOL"}
+	uoms := []string{"EA", "KG", "M"}
+	grades := []string{"A", "B", "C"}
+	flags := []string{"ROHS", "REACH", "ITAR"}
+	hazards := []string{"", "flammable", "toxic", "corrosive"}
+
+	default_supplier_id := ""
+	qualified_supplier_ids := []string{}
+
+	if len(supplierIDs) > 0 {
+		default_supplier_id = gofakeit.RandomString(supplierIDs)
+		qualified_supplier_ids = append(qualified_supplier_ids, default_supplier_id)
+
+		if len(supplierIDs) > 1 {
+			qualified_supplier_ids = append(qualified_supplier_ids, gofakeit.RandomString(supplierIDs))
+		}
+
+	}
+
 	return Part{
-		part_id:                gofakeit.UUID(),
-		tenant_id:              "example_tenant_id",
-		part_number:            "example_part_number",
-		description:            "example_description",
-		category:               "example_category",
-		lifecycle_status:       "active",
-		uom:                    "pcs",
-		spec_hash:              "example_spec_hash",
-		bom_compatibility:      []string{"compatibility_1", "compatibility_2"},
-		default_supplier_id:    "example_supplier_id",
-		qualified_supplier_ids: []string{"supplier_1", "supplier_2"},
-		unit_cost:              10.5,
-		moq:                    100,
-		lead_time_days_avg:     30,
-		lead_time_days_p95:     45,
-		quality_grade:          "A",
+		PartID:               gofakeit.UUID(),
+		TenantID:             tenant,
+		PartNumber:           "P-" + gofakeit.Numerify("######"),
+		Description:          gofakeit.Sentence(5),
+		Category:             gofakeit.RandomString(categories),
+		LifecycleStatus:      gofakeit.RandomString(lifecycle_status),
+		Uom:                  gofakeit.RandomString(uoms),
+		SpecHash:             gofakeit.UUID(),
+		BomCompatibility:     []string{gofakeit.LetterN(3), gofakeit.LetterN(3)},
+		DefaultSupplierID:    default_supplier_id,
+		QualifiedSupplierIDs: qualified_supplier_ids,
+		UnitCost:             gofakeit.Price(1, 1000), // Random price between 1 and 1000 -- keep it simple
+		Moq:                  gofakeit.Number(1, 500),
+		LeadTimeDaysAvg:      gofakeit.Number(2, 60),
+		LeadTimeDaysP95:      gofakeit.Number(5, 90),
+		QualityGrade:         gofakeit.RandomString(grades),
+
 		// GenerateParts creates and returns a slice of synthetic Parts.
 		// The number of parts generated is specified by count.
-		compliance_flags:    []string{"flag_1", "flag_2"},
-		hazard_class:        "non-hazardous",
-		last_price_change:   time.Now(),
-		data_source:         "example_source",
-		source_timestamp:    time.Now(),
-		ingestion_timestamp: time.Now(),
-		schema_version:      "1.0.0",
+		ComplianceFlags:    flags,
+		HazardClass:        gofakeit.RandomString(hazards),
+		LastPriceChange:    time.Now(),
+		DataSource:         "synthetic.v1",
+		SourceTimestamp:    time.Now().Add(-time.Hour * time.Duration(gofakeit.Number(1, 72))),
+		IngestionTimestamp: time.Now(),
+		SchemaVersion:      "1.0.0",
 	}
 }
 
-func GenerateParts(count int) []Part {
+func GenerateParts(count int, tenant string, supplierIDs []string) []Part {
 	parts := make([]Part, count)
 	for i := 0; i < count; i++ {
-		parts[i] = GeneratePart()
+		parts[i] = GeneratePart(tenant, supplierIDs)
 	}
 	return parts
 }
@@ -111,29 +133,29 @@ func PartsWriter(filename string, parts []Part) bool {
 	// Data rows
 	for _, part := range parts {
 		row := []string{
-			part.part_id,
-			part.tenant_id,
-			part.part_number,
-			part.description,
-			part.category,
-			part.lifecycle_status,
-			part.uom,
-			part.spec_hash,
-			strings.Join(part.bom_compatibility, ";"),
-			part.default_supplier_id,
-			strings.Join(part.qualified_supplier_ids, ";"),
-			fmt.Sprintf("%.2f", part.unit_cost),
-			strconv.Itoa(part.moq),
-			strconv.Itoa(part.lead_time_days_avg),
-			strconv.Itoa(part.lead_time_days_p95),
-			part.quality_grade,
-			strings.Join(part.compliance_flags, ";"),
-			part.hazard_class,
-			part.last_price_change.Format(time.RFC3339),
-			part.data_source,
-			part.source_timestamp.Format(time.RFC3339),
-			part.ingestion_timestamp.Format(time.RFC3339),
-			part.schema_version,
+			part.PartID,
+			part.TenantID,
+			part.PartNumber,
+			part.Description,
+			part.Category,
+			part.LifecycleStatus,
+			part.Uom,
+			part.SpecHash,
+			strings.Join(part.BomCompatibility, ";"),
+			part.DefaultSupplierID,
+			strings.Join(part.QualifiedSupplierIDs, ";"),
+			fmt.Sprintf("%.2f", part.UnitCost),
+			strconv.Itoa(part.Moq),
+			strconv.Itoa(part.LeadTimeDaysAvg),
+			strconv.Itoa(part.LeadTimeDaysP95),
+			part.QualityGrade,
+			strings.Join(part.ComplianceFlags, ";"),
+			part.HazardClass,
+			part.LastPriceChange.Format(time.RFC3339),
+			part.DataSource,
+			part.SourceTimestamp.Format(time.RFC3339),
+			part.IngestionTimestamp.Format(time.RFC3339),
+			part.SchemaVersion,
 		}
 		if err := w.Write(row); err != nil {
 			fmt.Println("error writing row:", err)
