@@ -11,7 +11,7 @@ func main() {
 	//fmt.Println("%+v\n", s)
 
 	out := suppliers.SupplierWriter("data/suppliers.csv", s)
-	out2 := parts.PartWriter("data/parts.csv", p)
+	out2 := parts.PartsWriter("data/parts.csv", p)
 
 	//fmt.Println("%+v\n", p)
 	print(out)

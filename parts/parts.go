@@ -11,7 +11,7 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 )
 
-type Parts struct {
+type Part struct {
 	part_id                string
 	tenant_id              string
 	part_number            string
@@ -33,12 +33,12 @@ type Parts struct {
 	last_price_change      time.Time
 	data_source            string
 	source_timestamp       time.Time
-	ingeestion_timestamp   time.Time
+	ingestion_timestamp    time.Time
 	schema_version         string
 }
 
-func GeneratePart() Parts {
-	return Parts{
+func GeneratePart() Part {
+	return Part{
 		part_id:                gofakeit.UUID(),
 		tenant_id:              "example_tenant_id",
 		part_number:            "example_part_number",
@@ -60,14 +60,14 @@ func GeneratePart() Parts {
 		last_price_change:      time.Now(),
 		data_source:            "example_source",
 		source_timestamp:       time.Now(),
-		ingeestion_timestamp:   time.Now(),
+		ingestion_timestamp:    time.Now(),
 		schema_version:         "1.0.0",
 	}
 }
 
-func GenerateParts(count int) []Parts {
+func GenerateParts(count int) []Part {
 	parts := make([]Part, count)
-	for i := 0; i < count; count++ {
+	for i := 0; i < count; i++ {
 		parts[i] = GeneratePart()
 	}
 
