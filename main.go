@@ -21,11 +21,11 @@ func main() {
 	defer conn.Close()
 
 	q := db.New(conn)
-	ctx := context.Background()
+	ctx := context.Background() //look into this
 	tenant := "tenant_acme"
 
 	// 2. generate suppliers
-	sups := suppliers.GenerateSuppliers(tenant, 1000)
+	sups := suppliers.GenerateSuppliers(tenant, 10000)
 
 	// 3. insert suppliers in a transaction
 	tx, err := conn.BeginTx(ctx, nil)
@@ -90,7 +90,7 @@ func main() {
 	}
 
 	// 5. generate parts
-	partsList := parts.GenerateParts(1000, tenant, supplierIDs)
+	partsList := parts.GenerateParts(10000, tenant, supplierIDs)
 
 	// 6. insert parts in a transaction
 	tx, err = conn.BeginTx(ctx, nil)

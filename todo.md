@@ -9,7 +9,7 @@
 6. look into temporal
 
 
-write to sqllite using sqlc,
+write to sqlite using sqlc,
 add tests for that flow
 if i wanted test api calls from sqlite to s3
 
@@ -19,10 +19,27 @@ if i wanted test api calls from sqlite to s3
 
 # Sep 19 
 
-1. clean out the db 
-2. sqlite api -> s3
-3. look into temporal
-4. improve README evenmore
-5. Ask Ali about file structuring, code practices
+1. clean out the db [n/a]
+2. make crud app ontop of sqlite
+   1. simple json api -> REST API
+   2. go has http built in server
+   3. insert & delete handler
+   4. THEN LOOK INTO OPENAPI to replace handlers
+THEN do 3
+3. look into opentelemetry
+4. look into openapi / swagger : https://github.com/oapi-codegen/oapi-codegen
+5. sqlite api -> s3 [n/a]
+6. look into temporal [n/a not needed yet]
+7. improve README evenmore
+8. Ask Ali about file structuring, code practices
    1. how to order, what usually to commit, the sql files and yaml files
       1. i want criticism.
+
+side project
+http call to api to get weather
+   (/weather openapi endpoint) -> return to caller
+   instrument it w/ opentelemetry (Trace caller, trace db, & trace api call)
+   ask melvin where to send opentelemtry views
+
+
+cmd server for http server, move curr main to generator in cmd dir -- std patterns
