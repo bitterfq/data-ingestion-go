@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/bitterfq/data-ingestion-go/internal/db"
 	"github.com/bitterfq/data-ingestion-go/parts"
@@ -13,12 +14,17 @@ import (
 )
 
 func main() {
+
 	// 1. connect to db
 	conn, err := sql.Open("sqlite3", "data.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
+
+	// create schema if it doesn't exist
+	schema, _ := os.ReadFile("schema.sql")
+	conn.Exec(string(schema)) // create tables from schema.sql
 
 	q := db.New(conn)
 	ctx := context.Background() //look into this
