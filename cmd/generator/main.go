@@ -32,6 +32,7 @@ func main() {
 
 	// 2. generate suppliers
 	sups := suppliers.GenerateSuppliers(tenant, 10000)
+	suppliers.SupplierWriter("suppliers.csv", sups)
 
 	// 3. insert suppliers in a transaction
 	tx, err := conn.BeginTx(ctx, nil)
@@ -97,6 +98,7 @@ func main() {
 
 	// 5. generate parts
 	partsList := parts.GenerateParts(10000, tenant, supplierIDs)
+	parts.PartsWriter("parts.csv", partsList)
 
 	// 6. insert parts in a transaction
 	tx, err = conn.BeginTx(ctx, nil)
