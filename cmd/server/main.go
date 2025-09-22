@@ -9,14 +9,16 @@ import (
 
 func main() {
 
-	resp, err := http.Get("http://github.com/bitterfq")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	defer resp.Body.Close()
-	fmt.Println("Response Status:", resp.Status)
-	//fmt.Println("Response Headers:", resp.Header)
-	fmt.Println("Response Body:", resp.Body)
+	fmt.Println("Starting server on :8080")
+	mux := http.NewServeMux()
 
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "OK")
+	})
+
+	fmt.Println("Server listening on :8080")
+
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		fmt.Println("Error starting server:", err)
+	}
 }

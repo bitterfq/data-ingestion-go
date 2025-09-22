@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/bitterfq/data-ingestion-go/internal/db"
-	"github.com/bitterfq/data-ingestion-go/parts"
-	"github.com/bitterfq/data-ingestion-go/suppliers"
+	"github.com/bitterfq/data-ingestion-go/internal/parts"
+	"github.com/bitterfq/data-ingestion-go/internal/suppliers"
 	_ "github.com/mattn/go-sqlite3"
 )
 
