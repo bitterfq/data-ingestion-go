@@ -77,3 +77,9 @@ VALUES
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?
 );
+
+-- name: DeleteSupplier :exec
+DELETE FROM dim_supplier_v1 WHERE supplier_id = ?;
+
+-- name: DeletePart :exec
+DELETE FROM dim_part_v1 WHERE part_id = ?;
