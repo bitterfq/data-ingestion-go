@@ -229,3 +229,21 @@ func (q *Queries) CreateSupplier(ctx context.Context, arg CreateSupplierParams) 
 	}
 	return result.RowsAffected()
 }
+
+const deletePart = `-- name: DeletePart :exec
+DELETE FROM dim_part_v1 WHERE part_id = ?
+`
+
+func (q *Queries) DeletePart(ctx context.Context, partID string) error {
+	_, err := q.db.ExecContext(ctx, deletePart, partID)
+	return err
+}
+
+const deleteSupplier = `-- name: DeleteSupplier :exec
+DELETE FROM dim_supplier_v1 WHERE supplier_id = ?
+`
+
+func (q *Queries) DeleteSupplier(ctx context.Context, supplierID string) error {
+	_, err := q.db.ExecContext(ctx, deleteSupplier, supplierID)
+	return err
+}
