@@ -19,15 +19,11 @@ if i wanted test api calls from sqlite to s3
 
 # Sep 19 
 
-1. make crud app ontop of sqlite
+1. make crud app ontop of sqlite [DONE]
    1. simple json api -> REST API
    2. go has http built in server
    3. insert & delete handler
    4. THEN LOOK INTO OPENAPI to replace handlers
-THEN do 2
-2. look into opentelemetry
-3. look into openapi / swagger : https://github.com/oapi-codegen/oapi-codegen
-4. improve README even more
 
 side project
 http call to api to get weather
@@ -35,5 +31,21 @@ http call to api to get weather
    instrument it w/ opentelemetry (Trace caller, trace db, & trace api call)
    ask melvin where to send opentelemtry views
 
+# Sep 22
 
-cmd server for http server, move curr main to generator in cmd dir -- std patterns
+1. look into openapi [LOW-PRIORITY]
+2. look into openapi / swagger [LOW-PRIORITY]
+3. build out api to get weather, store it in a json format right now
+4. Improve README
+5. look into NLP to SQL validation systems/frameworks
+   1. Assume models are given enough context
+   2. GOAL: test the output from
+   3. high level document to priotize workflow
+      1. describing test case how would we do it
+      2. assume context is already setup , db etc and models and there is expected data and compare with return data
+      3. how do u describe it
+      4. test specificaion for evaluation nlp to sql
+      5. how do u specify a test -> sentence.txt, query.txt, data.txt and expected result. each dir is its own test case
+      6. "WHAT CAN WE DO IN ONE DAY"
+6. Look into melvins llmjury project how we can link the two
+7. go connector for snowflake -- Melvin -- go lang cli for snowflake [high-priority]
