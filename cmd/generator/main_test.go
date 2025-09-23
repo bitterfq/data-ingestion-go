@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/bitterfq/data-ingestion-go/internal/db"
+	"github.com/bitterfq/data-ingestion-go/internal/database/db"
 	"github.com/bitterfq/data-ingestion-go/internal/parts"
 	"github.com/bitterfq/data-ingestion-go/internal/suppliers"
 	_ "github.com/mattn/go-sqlite3"
@@ -20,7 +20,7 @@ func setupTestDB(t *testing.T) (*sql.DB, *db.Queries) {
 		t.Fatalf("open sqlite: %v", err)
 	}
 
-	schema, err := os.ReadFile("schema.sql")
+	schema, err := os.ReadFile("../../internal/database/schema.sql")
 	if err != nil {
 		t.Fatalf("read schema.sql: %v", err)
 	}

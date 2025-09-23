@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bitterfq/data-ingestion-go/internal/db"
+	"github.com/bitterfq/data-ingestion-go/internal/database/db"
 	"github.com/bitterfq/data-ingestion-go/internal/parts"
 	"github.com/bitterfq/data-ingestion-go/internal/suppliers"
 	_ "github.com/mattn/go-sqlite3"
@@ -16,15 +16,18 @@ import (
 func main() {
 
 	// 1. connect to db
-	conn, err := sql.Open("sqlite3", "data.db")
+	conn, err := sql.Open("sqlite3", "data/data.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
 
-	// create schema if it doesn't exist
-	schema, _ := os.ReadFile("schema.sql")
-	conn.Exec(string(schema)) // create tables from schema.sql
+	schema, err := os.ReadFile("internal/database/schema.sql")
+	if err != nil {
+		log.Fatal("failed to read schema file:", err)
+	}
+
+	conn.Exec(string(schema))
 
 	q := db.New(conn)
 	ctx := context.Background() //look into this
@@ -32,7 +35,8 @@ func main() {
 
 	// 2. generate suppliers
 	sups := suppliers.GenerateSuppliers(tenant, 10000)
-	suppliers.SupplierWriter("suppliers.csv", sups)
+
+	suppliers.SupplierWriter("data/suppliers.csv", sups)
 
 	// 3. insert suppliers in a transaction
 	tx, err := conn.BeginTx(ctx, nil)
@@ -98,7 +102,7 @@ func main() {
 
 	// 5. generate parts
 	partsList := parts.GenerateParts(10000, tenant, supplierIDs)
-	parts.PartsWriter("parts.csv", partsList)
+	parts.PartsWriter("data/parts.csv", partsList)
 
 	// 6. insert parts in a transaction
 	tx, err = conn.BeginTx(ctx, nil)

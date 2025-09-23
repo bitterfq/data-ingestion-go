@@ -11,7 +11,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/bitterfq/data-ingestion-go/internal/db"
+	"github.com/bitterfq/data-ingestion-go/internal/database/db"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/oklog/ulid/v2"
 )
@@ -19,14 +19,14 @@ import (
 func main() {
 
 	// 1. connect to db
-	conn, err := sql.Open("sqlite3", "data.db")
+	conn, err := sql.Open("sqlite3", "data/data.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
 
 	// create schema if it doesn't exist
-	schema, _ := os.ReadFile("schema.sql")
+	schema, _ := os.ReadFile("internal/database/schema.sql")
 	conn.Exec(string(schema)) // create tables from schema.sql
 
 	q := db.New(conn)
