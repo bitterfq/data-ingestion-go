@@ -48,4 +48,4 @@ http call to api to get weather
       5. how do u specify a test -> sentence.txt, query.txt, data.txt and expected result. each dir is its own test case
       6. "WHAT CAN WE DO IN ONE DAY"
 6. Look into melvins llmjury project how we can link the two
-7. go connector for snowflake -- Melvin -- go lang cli for snowflake [high-priority]
+7. go connector for snowflake -- Melvin -- go lang cli for snowflake [high-priority] --> temporal consistent runner

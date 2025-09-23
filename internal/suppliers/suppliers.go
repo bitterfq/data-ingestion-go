@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
@@ -167,6 +168,13 @@ func GenerateSuppliers(tenant string, count int) []Supplier {
 // SupplierWriter writes a slice of Supplier records to a CSV file with the given filename.
 // Returns true if the file was written successfully, false otherwise.
 func SupplierWriter(filename string, suppliers []Supplier) bool {
+	//ensure the directory exists
+	dir := filepath.Dir(filename)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		fmt.Println("error creating directory:", err)
+		return false
+	}
+
 	file, err := os.Create(filename)
 	if err != nil {
 		fmt.Println("error creating file:", err)
