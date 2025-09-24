@@ -7,11 +7,23 @@ import (
 	"encoding/pem"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/joho/godotenv"
 	"github.com/snowflakedb/gosnowflake"
 	_ "github.com/snowflakedb/gosnowflake"
 )
+
+// getPath resolves a path relative to this package's directory if not absolute.
+func getPath(rel string) string {
+	if filepath.IsAbs(rel) {
+		return rel
+	}
+	_, b, _, _ := runtime.Caller(0) // b = full path of this source file
+	base := filepath.Dir(b)         // directory of this file (internal/snowflake)
+	return filepath.Join(base, rel)
+}
 
 func loadPrivateKey(path string, passphrase []byte) (*rsa.PrivateKey, error) {
 	keyBytes, err := os.ReadFile(path)
@@ -46,8 +58,16 @@ func loadPrivateKey(path string, passphrase []byte) (*rsa.PrivateKey, error) {
 	return priv, nil
 }
 
-func NewClient() (*sql.DB, error) {
-	_ = godotenv.Load("../../.env")
+func NewClient(env string) (*sql.DB, error) {
+	if env == "" {
+		env = ".env"
+	}
+
+	err := godotenv.Load(env)
+
+	if err != nil {
+		return nil, fmt.Errorf("load .env: %w", err)
+	}
 
 	cfg := gosnowflake.Config{
 		Account:       os.Getenv("SNOWFLAKE_ACCOUNT"),
@@ -59,7 +79,8 @@ func NewClient() (*sql.DB, error) {
 		Authenticator: gosnowflake.AuthTypeJwt,
 	}
 
-	privateKey, err := loadPrivateKey(os.Getenv("SNOWFLAKE_PRIVATE_KEY_FILE"),
+	keyPath := getPath(os.Getenv("SNOWFLAKE_PRIVATE_KEY_FILE"))
+	privateKey, err := loadPrivateKey(keyPath,
 		[]byte(os.Getenv("SNOWFLAKE_PRIVATE_KEY_PASSPHRASE")))
 	if err != nil {
 		return nil, err

@@ -7,7 +7,7 @@ import (
 
 func TestClient(t *testing.T) {
 	// Just test that NewClient runs without panic
-	db, err := NewClient()
+	db, err := NewClient("../../.env")
 
 	if err != nil {
 		t.Fatal("[FAILED] snowflake connector failed: ", err)
@@ -19,7 +19,7 @@ func TestClient(t *testing.T) {
 }
 
 func TestClientHealthCheck(t *testing.T) {
-	db, err := NewClient()
+	db, err := NewClient("../../.env")
 	if err != nil {
 		t.Fatal("Failed to create client:", err)
 	}
@@ -37,7 +37,7 @@ func TestClientHealthCheck(t *testing.T) {
 }
 
 func TestSimpleQuery(t *testing.T) {
-	db, err := NewClient()
+	db, err := NewClient("../../.env")
 	if err != nil {
 		t.Fatal("Failed to create client:", err)
 	}
@@ -55,7 +55,7 @@ func TestSimpleQuery(t *testing.T) {
 }
 
 func TestSelectQuery(t *testing.T) {
-	db, err := NewClient()
+	db, err := NewClient("../../.env")
 	if err != nil {
 		t.Fatal("Failed to create client:", err)
 	}
@@ -78,4 +78,19 @@ func TestSelectQuery(t *testing.T) {
 		fmt.Println("-----")
 	}
 	t.Log("Select query test succeeded")
+}
+
+func TestLoadPrivateKey(t *testing.T) {
+	// Adjust the path as necessary for your environment
+	keyPath := "keys/rsa_key.p8"
+	passphrase := []byte("") // Empty passphrase for this example
+
+	privateKey, err := loadPrivateKey(keyPath, passphrase)
+	if err != nil {
+		t.Fatal("Failed to load private key:", err)
+	}
+	if privateKey == nil {
+		t.Fatal("Private key is nil")
+	}
+	t.Log("Private key loaded successfully")
 }
