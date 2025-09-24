@@ -49,3 +49,11 @@ http call to api to get weather
       6. "WHAT CAN WE DO IN ONE DAY"
 6. Look into melvins llmjury project how we can link the two
 7. go connector for snowflake -- Melvin -- go lang cli for snowflake [high-priority] --> temporal consistent runner
+
+# Sep 24
+
+end to end code , http server , fetch data from snowflake and insert into database and respond w/ data that was fetched --> real reason is to do the tracing, opentelemetry
+
+add endpoint to server, that queries snowflake takes a query param returns data associated with it, and insert it into the database. trace the entire thing
+
+look into structured json logging
