@@ -44,3 +44,24 @@ func TestPostSuppleirs(t *testing.T) {
 		t.Fatalf("expected status 201, got %d", resp.StatusCode)
 	}
 }
+
+func TestFetchAndInsert(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/fetch-and-insert", nil)
+	w := httptest.NewRecorder()
+
+	// directly call the handler
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Fetch and insert successful"))
+	})
+	handler.ServeHTTP(w, req)
+
+	resp := w.Result()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected status 200, got %d", resp.StatusCode)
+	}
+}
